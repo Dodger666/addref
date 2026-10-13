@@ -231,35 +231,37 @@ body {
 
 .muted { color: var(--muted); }
 
-/* ---------- browse (drill-down) ---------- */
-.browse { max-width: 760px; }
+/* ---------- browse (drill-down, in left panel) ---------- */
+.browse-left { padding: 0.9rem 1.1rem 1.5rem; }
 
 .browse-nav {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  margin: 0 0 2rem;
-  font-size: 0.95rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1.25rem;
+  font-size: 0.9rem;
 }
 .browse-nav a { color: var(--muted); text-decoration: none; }
 .browse-nav a:hover { color: var(--ink); }
 .browse-nav .current { color: var(--ink); font-weight: 600; }
 .browse-nav .dot { color: var(--faint); }
 
-/* spell taxonomy: class row + level badges */
-.tax { display: flex; flex-direction: column; gap: 0.25rem; }
+/* spell taxonomy: class label with level badges below */
+.tax { display: flex; flex-direction: column; gap: 0.35rem; }
 .tax-row {
-  display: grid;
-  grid-template-columns: 9rem 1fr;
-  align-items: center;
-  padding: 0.55rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--line);
 }
-.tax-label { font-size: 1.05rem; }
-.tax-levels { display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; }
+.tax-label { font-size: 1rem; font-weight: 600; }
+.tax-levels { display: flex; flex-wrap: wrap; gap: 0.5rem 0.9rem; }
 .tax-levels .lvl {
   color: var(--muted);
   text-decoration: none;
-  font-size: 1.05rem;
+  font-size: 1rem;
   min-width: 1ch;
   text-align: center;
 }
@@ -267,8 +269,8 @@ body {
 
 /* magic-item / monster taxonomy: simple link list */
 .tax-list { list-style: none; margin: 0; padding: 0; }
-.tax-list li { padding: 0.5rem 0; border-bottom: 1px solid var(--line); }
-.tax-list a { color: var(--ink); text-decoration: none; font-size: 1.05rem; }
+.tax-list li { padding: 0.55rem 0; border-bottom: 1px solid var(--line); }
+.tax-list a { color: var(--ink); text-decoration: none; font-size: 1rem; }
 .tax-list a:hover { text-decoration: underline; text-underline-offset: 4px; }
 
 /* drill-down breadcrumb */
@@ -276,23 +278,25 @@ body {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
-  gap: 0.45rem;
-  font-size: 1rem;
-  margin-bottom: 0.75rem;
+  gap: 0.4rem;
+  font-size: 0.92rem;
+  margin-bottom: 0.6rem;
 }
 .crumb a { color: var(--muted); text-decoration: none; }
 .crumb a:hover { color: var(--ink); }
 .crumb .sep { color: var(--faint); }
 .crumb .crumb-mid { color: var(--ink); font-weight: 600; }
 .crumb .crumb-cur { color: var(--ink); font-weight: 600; }
-.crumb .crumb-count { color: var(--faint); font-family: var(--font-mono); font-size: 0.85rem; }
+.crumb .crumb-count { color: var(--faint); font-family: var(--font-mono); font-size: 0.8rem; }
 
 /* sibling switcher (levels / categories / books) */
 .switcher {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem 1rem;
-  margin-bottom: 1.5rem;
+  gap: 0.35rem 0.9rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--line-strong);
 }
 .switcher a { color: var(--muted); text-decoration: none; }
 .switcher a:hover { color: var(--ink); }
@@ -302,7 +306,7 @@ body {
   border-bottom: 2px solid var(--ink);
   padding-bottom: 1px;
 }
-.switcher-wide { gap: 0.4rem 1.1rem; font-size: 0.95rem; }
+.switcher-wide { font-size: 0.92rem; }
 
 /* entry rows */
 .browse-entries { display: flex; flex-direction: column; }
@@ -315,15 +319,16 @@ body {
   background: transparent;
   border: none;
   border-bottom: 1px solid var(--line);
-  padding: 0.7rem 0.25rem;
+  padding: 0.6rem 0.25rem;
   cursor: pointer;
   font-family: var(--font-ui);
   color: var(--ink);
 }
 .entry-row:hover { background: var(--hover); }
-.entry-row .ent-name { font-size: 1.1rem; font-weight: 500; }
+.entry-row.active { background: var(--sel); }
+.entry-row .ent-name { font-size: 1rem; font-weight: 500; }
 .entry-row .ent-sup {
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   letter-spacing: 0.06em;
   color: var(--faint);
   font-family: var(--font-mono);

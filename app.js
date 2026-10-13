@@ -191,16 +191,22 @@ function renderResults(list, opts = {}) {
 function renderBrowse(token) {
   el.search.value = "";
   state.results = [];
-  el.results.innerHTML = "";
   const parts = decodeURIComponent(token).split(".").filter(Boolean);
   const type = parts[0];
   if (!type || !state.types[type]) {
+    el.results.innerHTML = "";
     el.detail.innerHTML = `<div class="empty"><h1>Browse</h1><p class="muted">Unknown list.</p></div>`;
     return;
   }
   if (parts.length === 1) renderOverview(type);
   else renderDrill(type, parts.slice(1));
-  el.detail.querySelector(".detail-scroll")?.scrollTo(0, 0);
+  el.results.scrollTop = 0;
+}
+
+function browsePlaceholder(type) {
+  const t = state.types[type];
+  el.detail.innerHTML = `<div class="empty"><h1>${t ? t.label : "Browse"}</h1>
+    <p class="muted">Select an entry to view its details.</p></div>`;
 }
 
 function browseNav(current) {
@@ -262,10 +268,11 @@ function renderOverview(type) {
       .join("")}</ul>`;
   }
 
-  el.detail.innerHTML = `<div class="detail-scroll browse">
+  el.results.innerHTML = `<div class="browse-left">
     ${browseNav(type)}
     <div class="tax">${body}</div>
   </div>`;
+  browsePlaceholder(type);
 }
 
 function browseEntry(e, type) {
@@ -279,6 +286,8 @@ function browseEntry(e, type) {
   row.className = "entry-row";
   row.innerHTML = `<span class="ent-name">${escapeHtml(e.name)}</span>${sup}`;
   row.addEventListener("click", () => {
+    el.results.querySelectorAll(".entry-row.active").forEach((n) => n.classList.remove("active"));
+    row.classList.add("active");
     location.hash = `#/entity/${encodeURIComponent(e.id)}`;
   });
   return row;
@@ -350,14 +359,15 @@ function renderDrill(type, facets) {
 
   items.sort((a, b) => a.name.localeCompare(b.name));
 
-  el.detail.innerHTML = `<div class="detail-scroll browse">
+  el.results.innerHTML = `<div class="browse-left">
     ${browseNav(type)}
     <nav class="crumb">${crumbs.join(" ")} <span class="crumb-count">${items.length}</span></nav>
     ${switcher}
     <div class="browse-entries" id="browse-entries"></div>
   </div>`;
 
-  const container = document.getElementById("browse-entries");
+  browsePlaceholder(type);
+  const container = el.results.querySelector("#browse-entries");
   if (!items.length) {
     container.innerHTML = `<p class="muted">No entries.</p>`;
     return;
