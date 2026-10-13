@@ -35,8 +35,10 @@ const MAGIC_ITEM_CATEGORIES = [
 ];
 // Monster source books, in the original app's order.
 const MONSTER_BOOK_ORDER = ["mm1", "ff", "mm2"];
-// Preferred ordering of publications for the Book filter.
-const PUB_ORDER = ["phb1", "dmg1", "mm1", "ff", "mm2", "ua"];
+// The "core" publication per type; entries from other sources get a superscript tag.
+const CORE_PUB = { spell: "phb1", magic_item: "dmg1" };
+const PUB_SHORT = { phb1: "PHB", dmg1: "DMG", mm1: "MM", mm2: "MM2", ff: "FF", ua: "UA" };
+const ORDINAL = ["Cantrips", "1st level", "2nd level", "3rd level", "4th level", "5th level", "6th level", "7th level", "8th level", "9th level"];
 
 // ---------- data loading ----------
 
@@ -184,87 +186,183 @@ function renderResults(list, opts = {}) {
   if (opts.selectable) highlightActive();
 }
 
-// ---------- browse ----------
+// ---------- browse (drill-down, like the original) ----------
 
-function renderList(entityType) {
-  const t = state.types[entityType];
-  const items = state.index.filter((e) => e.entity_type === entityType);
+function renderBrowse(token) {
+  el.search.value = "";
+  state.results = [];
   el.results.innerHTML = "";
+  const parts = decodeURIComponent(token).split(".").filter(Boolean);
+  const type = parts[0];
+  if (!type || !state.types[type]) {
+    el.detail.innerHTML = `<div class="empty"><h1>Browse</h1><p class="muted">Unknown list.</p></div>`;
+    return;
+  }
+  if (parts.length === 1) renderOverview(type);
+  else renderDrill(type, parts.slice(1));
+  el.detail.querySelector(".detail-scroll")?.scrollTo(0, 0);
+}
 
-  if (entityType === "spell") {
-    const byClass = groupBy(items, (e) => e.spell_class || "other");
-    for (const cls of SPELL_CLASS_ORDER) {
-      if (!byClass[cls]) continue;
-      addGroupHead(SPELL_CLASS_LABEL[cls] || cls);
-      const byLevel = groupBy(byClass[cls], (e) => e.level ?? 0);
-      Object.keys(byLevel)
-        .map(Number)
-        .sort((a, b) => a - b)
-        .forEach((lvl) => {
-          addGroupHead(lvl === 0 ? "— Cantrips" : `— Level ${lvl}`, true);
-          byLevel[lvl]
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .forEach((e) => el.results.appendChild(resultItem(e)));
-        });
-    }
-  } else if (entityType === "magic_item") {
-    // group by category (Potions, Scrolls, Rings, …)
-    const byCat = groupBy(items, (e) => e.group || "miscellaneous");
-    const seen = new Set();
-    for (const [id, label] of MAGIC_ITEM_CATEGORIES) {
-      if (!byCat[id]) continue;
-      seen.add(id);
-      addGroupHead(label);
-      byCat[id]
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .forEach((e) => el.results.appendChild(resultItem(e)));
-    }
-    // any category not in the known list (defensive)
-    Object.keys(byCat)
-      .filter((id) => !seen.has(id))
-      .sort()
-      .forEach((id) => {
-        addGroupHead(humanize(id));
-        byCat[id]
-          .sort((a, b) => a.name.localeCompare(b.name))
-          .forEach((e) => el.results.appendChild(resultItem(e)));
-      });
+function browseNav(current) {
+  const items = [["spell", "spells"], ["magic_item", "magic items"], ["monster", "monsters"]];
+  return `<nav class="browse-nav">${items
+    .map(([id, label]) =>
+      id === current
+        ? `<span class="current">${label}</span>`
+        : `<a href="#/list/${id}">${label}</a>`
+    )
+    .join('<span class="dot">·</span>')}</nav>`;
+}
+
+function spellLevelsFor(cls) {
+  const levels = new Set(
+    state.index
+      .filter((e) => e.entity_type === "spell" && e.spell_class === cls)
+      .map((e) => e.level ?? 0)
+  );
+  return [...levels].sort((a, b) => a - b);
+}
+
+function renderOverview(type) {
+  let body = "";
+  if (type === "spell") {
+    body = SPELL_CLASS_ORDER.filter((cls) =>
+      state.index.some((e) => e.entity_type === "spell" && e.spell_class === cls)
+    )
+      .map((cls) => {
+        const badges = spellLevelsFor(cls)
+          .map(
+            (lvl) =>
+              `<a class="lvl" href="#/list/spell.${cls}.${lvl}" title="${ORDINAL[lvl]}">${lvl}</a>`
+          )
+          .join("");
+        return `<div class="tax-row">
+          <div class="tax-label">${SPELL_CLASS_LABEL[cls] || cls}</div>
+          <div class="tax-levels">${badges}</div>
+        </div>`;
+      })
+      .join("");
+  } else if (type === "magic_item") {
+    const present = new Set(
+      state.index.filter((e) => e.entity_type === "magic_item").map((e) => e.group)
+    );
+    body = `<ul class="tax-list">${MAGIC_ITEM_CATEGORIES.filter(([id]) => present.has(id))
+      .map(([id, label]) => `<li><a href="#/list/magic_item.${id}">${label}</a></li>`)
+      .join("")}</ul>`;
   } else {
-    // monsters: group by source book
-    const byPub = groupBy(items, (e) => e.publication || "other");
-    const order = [
-      ...MONSTER_BOOK_ORDER.filter((p) => byPub[p]),
-      ...Object.keys(byPub)
-        .filter((p) => !MONSTER_BOOK_ORDER.includes(p))
-        .sort((a, b) => (state.publications[a] || a).localeCompare(state.publications[b] || b)),
+    const present = new Set(
+      state.index.filter((e) => e.entity_type === "monster").map((e) => e.publication)
+    );
+    const books = [
+      ...MONSTER_BOOK_ORDER.filter((p) => present.has(p)),
+      ...[...present].filter((p) => !MONSTER_BOOK_ORDER.includes(p)).sort(),
     ];
-    order.forEach((pub) => {
-      addGroupHead(state.publications[pub] || pub);
-      byPub[pub]
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .forEach((e) => el.results.appendChild(resultItem(e)));
-    });
+    body = `<ul class="tax-list">${books
+      .map((p) => `<li><a href="#/list/monster.${p}">${escapeHtml(state.publications[p] || p)}</a></li>`)
+      .join("")}</ul>`;
   }
 
-  el.detail.innerHTML = `<div class="empty"><h1>${t ? t.label : entityType}</h1>
-    <p class="muted">${items.length} entries. Select one to view details.</p></div>`;
+  el.detail.innerHTML = `<div class="detail-scroll browse">
+    ${browseNav(type)}
+    <div class="tax">${body}</div>
+  </div>`;
 }
 
-function addGroupHead(text, sub = false) {
-  const div = document.createElement("div");
-  div.className = "group-head";
-  if (sub) div.style.paddingLeft = "1.1rem";
-  div.textContent = text;
-  el.results.appendChild(div);
-}
-
-function groupBy(arr, fn) {
-  const out = {};
-  arr.forEach((x) => {
-    const k = fn(x);
-    (out[k] = out[k] || []).push(x);
+function browseEntry(e, type) {
+  const core = CORE_PUB[type];
+  const sup =
+    core && e.publication && e.publication !== core
+      ? ` <sup class="ent-sup">${escapeHtml(PUB_SHORT[e.publication] || e.publication.toUpperCase())}</sup>`
+      : "";
+  const row = document.createElement("button");
+  row.type = "button";
+  row.className = "entry-row";
+  row.innerHTML = `<span class="ent-name">${escapeHtml(e.name)}</span>${sup}`;
+  row.addEventListener("click", () => {
+    location.hash = `#/entity/${encodeURIComponent(e.id)}`;
   });
-  return out;
+  return row;
+}
+
+function renderDrill(type, facets) {
+  let items = [];
+  let crumbs = [];
+  let switcher = "";
+
+  if (type === "spell") {
+    const cls = facets[0];
+    const lvl = Number(facets[1]);
+    items = state.index.filter(
+      (e) => e.entity_type === "spell" && e.spell_class === cls && (e.level ?? 0) === lvl
+    );
+    crumbs = [
+      `<a href="#/list/spell">Spells</a>`,
+      `<span class="sep">›</span>`,
+      `<span class="crumb-mid">${SPELL_CLASS_LABEL[cls] || cls}</span>`,
+      `<span class="sep">›</span>`,
+      `<span class="crumb-cur">${ORDINAL[lvl] || `Level ${lvl}`}</span>`,
+    ];
+    switcher = `<div class="switcher">${spellLevelsFor(cls)
+      .map((l) =>
+        l === lvl ? `<span class="active">${l}</span>` : `<a href="#/list/spell.${cls}.${l}">${l}</a>`
+      )
+      .join("")}</div>`;
+  } else if (type === "magic_item") {
+    const cat = facets[0];
+    const label = (MAGIC_ITEM_CATEGORIES.find(([id]) => id === cat) || [cat, humanize(cat)])[1];
+    items = state.index.filter((e) => e.entity_type === "magic_item" && e.group === cat);
+    crumbs = [
+      `<a href="#/list/magic_item">Magic items</a>`,
+      `<span class="sep">›</span>`,
+      `<span class="crumb-cur">${escapeHtml(label)}</span>`,
+    ];
+    const present = new Set(
+      state.index.filter((e) => e.entity_type === "magic_item").map((e) => e.group)
+    );
+    switcher = `<div class="switcher switcher-wide">${MAGIC_ITEM_CATEGORIES.filter(([id]) => present.has(id))
+      .map(([id, l]) =>
+        id === cat ? `<span class="active">${l}</span>` : `<a href="#/list/magic_item.${id}">${l}</a>`
+      )
+      .join("")}</div>`;
+  } else {
+    const book = facets[0];
+    items = state.index.filter((e) => e.entity_type === "monster" && e.publication === book);
+    crumbs = [
+      `<a href="#/list/monster">Monsters</a>`,
+      `<span class="sep">›</span>`,
+      `<span class="crumb-cur">${escapeHtml(state.publications[book] || book)}</span>`,
+    ];
+    const present = new Set(
+      state.index.filter((e) => e.entity_type === "monster").map((e) => e.publication)
+    );
+    const books = [
+      ...MONSTER_BOOK_ORDER.filter((p) => present.has(p)),
+      ...[...present].filter((p) => !MONSTER_BOOK_ORDER.includes(p)).sort(),
+    ];
+    switcher = `<div class="switcher switcher-wide">${books
+      .map((p) =>
+        p === book
+          ? `<span class="active">${escapeHtml(state.publications[p] || p)}</span>`
+          : `<a href="#/list/monster.${p}">${escapeHtml(state.publications[p] || p)}</a>`
+      )
+      .join("")}</div>`;
+  }
+
+  items.sort((a, b) => a.name.localeCompare(b.name));
+
+  el.detail.innerHTML = `<div class="detail-scroll browse">
+    ${browseNav(type)}
+    <nav class="crumb">${crumbs.join(" ")} <span class="crumb-count">${items.length}</span></nav>
+    ${switcher}
+    <div class="browse-entries" id="browse-entries"></div>
+  </div>`;
+
+  const container = document.getElementById("browse-entries");
+  if (!items.length) {
+    container.innerHTML = `<p class="muted">No entries.</p>`;
+    return;
+  }
+  items.forEach((e) => container.appendChild(browseEntry(e, type)));
 }
 
 // ---------- detail ----------
@@ -371,132 +469,17 @@ function escapeHtml(s) {
     .replace(/>/g, "&gt;");
 }
 
-// ---------- filter page ----------
-
-const filterState = { type: "", cls: "", level: "", category: "", book: "" };
-
-function levelOptions() {
-  const opts = [["0", "Cantrips"]];
-  for (let n = 1; n <= 9; n++) opts.push([String(n), `Level ${n}`]);
-  return opts;
-}
-
-function buildSelect(id, options, selected) {
-  const opts = [`<option value="">All</option>`]
-    .concat(
-      options.map(
-        ([v, l]) =>
-          `<option value="${escapeHtml(v)}"${v === selected ? " selected" : ""}>${escapeHtml(l)}</option>`
-      )
-    )
-    .join("");
-  return `<select id="${id}">${opts}</select>`;
-}
-
-function bookOptions() {
-  return Object.keys(state.publications)
-    .sort((a, b) => {
-      const ia = PUB_ORDER.indexOf(a);
-      const ib = PUB_ORDER.indexOf(b);
-      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b);
-    })
-    .map((id) => [id, state.publications[id]]);
-}
-
-function renderFilter(query) {
-  el.search.value = "";
-  state.results = [];
-  el.results.innerHTML = "";
-
-  const p = new URLSearchParams(query || "");
-  filterState.type = p.get("type") || "";
-  filterState.cls = p.get("class") || "";
-  filterState.level = p.get("level") || "";
-  filterState.category = p.get("category") || "";
-  filterState.book = p.get("book") || "";
-
-  const field = (id, label, inner) =>
-    `<div class="filter-field"><label for="${id}">${label}</label>${inner}</div>`;
-
-  el.detail.innerHTML = `<div class="detail-scroll">
-    <h1 class="entry-title">Filter</h1>
-    <div class="filters">
-      ${field("f-type", "Type", buildSelect("f-type", [["spell", "Spells"], ["magic_item", "Magic Items"], ["monster", "Monsters"]], filterState.type))}
-      ${field("f-class", "Class", buildSelect("f-class", SPELL_CLASS_ORDER.map((c) => [c, SPELL_CLASS_LABEL[c]]), filterState.cls))}
-      ${field("f-level", "Level", buildSelect("f-level", levelOptions(), filterState.level))}
-      ${field("f-category", "Category", buildSelect("f-category", MAGIC_ITEM_CATEGORIES, filterState.category))}
-      ${field("f-book", "Book", buildSelect("f-book", bookOptions(), filterState.book))}
-      <div class="filter-field"><label>&nbsp;</label><button id="f-reset" class="reset-btn">Reset</button></div>
-    </div>
-    <p class="muted filter-count" id="filter-count"></p>
-    <ul class="results filter-results" id="filter-results"></ul>
-  </div>`;
-
-  const map = { "f-type": "type", "f-class": "cls", "f-level": "level", "f-category": "category", "f-book": "book" };
-  Object.keys(map).forEach((id) => {
-    document.getElementById(id).addEventListener("change", (ev) => {
-      filterState[map[id]] = ev.target.value;
-      syncFilterUrl();
-      applyFilter();
-    });
-  });
-  document.getElementById("f-reset").addEventListener("click", () => {
-    Object.keys(filterState).forEach((k) => (filterState[k] = ""));
-    syncFilterUrl();
-    renderFilter("");
-  });
-
-  applyFilter();
-}
-
-function applyFilter() {
-  const f = filterState;
-  let list = state.index.slice();
-  if (f.type) list = list.filter((e) => e.entity_type === f.type);
-  if (f.book) list = list.filter((e) => e.publication === f.book);
-  if (f.cls) list = list.filter((e) => e.entity_type === "spell" && e.spell_class === f.cls);
-  if (f.level !== "") list = list.filter((e) => e.entity_type === "spell" && String(e.level ?? "") === f.level);
-  if (f.category) list = list.filter((e) => e.entity_type === "magic_item" && (e.group || "") === f.category);
-  list.sort((a, b) => a.name.localeCompare(b.name));
-
-  const container = document.getElementById("filter-results");
-  const count = document.getElementById("filter-count");
-  if (!container || !count) return;
-  container.innerHTML = "";
-  list.slice(0, 500).forEach((e) => container.appendChild(resultItem(e)));
-  count.textContent =
-    `${list.length} match${list.length === 1 ? "" : "es"}` +
-    (list.length > 500 ? " · showing first 500" : "");
-}
-
-function syncFilterUrl() {
-  const f = filterState;
-  const p = new URLSearchParams();
-  if (f.type) p.set("type", f.type);
-  if (f.cls) p.set("class", f.cls);
-  if (f.level !== "") p.set("level", f.level);
-  if (f.category) p.set("category", f.category);
-  if (f.book) p.set("book", f.book);
-  const qs = p.toString();
-  history.replaceState(null, "", "#/filter" + (qs ? `?${qs}` : ""));
-}
-
 // ---------- routing ----------
 
 function route() {
   const raw = (location.hash || "#/").slice(1); // drop leading '#'
   const qIndex = raw.indexOf("?");
   const path = qIndex === -1 ? raw : raw.slice(0, qIndex);
-  const query = qIndex === -1 ? "" : raw.slice(qIndex + 1);
 
   if (path.startsWith("/entity/")) {
     renderEntity(decodeURIComponent(path.slice("/entity/".length)));
   } else if (path.startsWith("/list/")) {
-    el.search.value = "";
-    state.results = [];
-    renderList(path.slice("/list/".length));
-  } else if (path.startsWith("/filter")) {
-    renderFilter(query);
+    renderBrowse(path.slice("/list/".length));
   } else {
     renderResults([]);
     el.detail.innerHTML = `<div class="empty"><h1>AD&amp;D Search</h1>
