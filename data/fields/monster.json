@@ -1,0 +1,134 @@
+[
+    {
+        "key": "frequency",
+        "label": "Frequency",
+        "sort_order": 0,
+        "parent_key": null
+    },
+    {
+        "key": "no_appearing",
+        "label": "No. Appearing",
+        "sort_order": 10,
+        "parent_key": null
+    },
+    {
+        "key": "armor_class",
+        "label": "Armor Class",
+        "sort_order": 20,
+        "parent_key": null
+    },
+    {
+        "key": "move",
+        "label": "Move",
+        "sort_order": 30,
+        "parent_key": null
+    },
+    {
+        "key": "hit_dice",
+        "label": "Hit Dice",
+        "sort_order": 40,
+        "parent_key": null
+    },
+    {
+        "key": "pct_in_lair",
+        "label": "% in Lair",
+        "sort_order": 50,
+        "parent_key": null
+    },
+    {
+        "key": "treasure_type",
+        "label": "Treasure Type",
+        "sort_order": 60,
+        "parent_key": null
+    },
+    {
+        "key": "no_of_attacks",
+        "label": "No. of Attacks",
+        "sort_order": 70,
+        "parent_key": null
+    },
+    {
+        "key": "damage_per_attack",
+        "label": "Damage/Attack",
+        "sort_order": 80,
+        "parent_key": null
+    },
+    {
+        "key": "special_attacks",
+        "label": "Special Attacks",
+        "sort_order": 90,
+        "parent_key": null
+    },
+    {
+        "key": "special_defenses",
+        "label": "Special Defenses",
+        "sort_order": 100,
+        "parent_key": null
+    },
+    {
+        "key": "magic_resistance",
+        "label": "Magic Resistance",
+        "sort_order": 110,
+        "parent_key": null
+    },
+    {
+        "key": "intelligence",
+        "label": "Intelligence",
+        "sort_order": 120,
+        "parent_key": null
+    },
+    {
+        "key": "alignment",
+        "label": "Alignment",
+        "sort_order": 130,
+        "parent_key": null
+    },
+    {
+        "key": "size",
+        "label": "Size",
+        "sort_order": 140,
+        "parent_key": null
+    },
+    {
+        "key": "psionic_ability",
+        "label": "Psionic Ability",
+        "sort_order": 150,
+        "parent_key": null
+    },
+    {
+        "key": "attack_defense_modes",
+        "label": "Attack/Defense Modes",
+        "sort_order": 160,
+        "parent_key": "psionic_ability"
+    },
+    {
+        "key": "chance_of",
+        "label": "Chance of",
+        "sort_order": 170,
+        "parent_key": null
+    },
+    {
+        "key": "level_xp_value",
+        "label": "Level/X.P. Value",
+        "sort_order": 170,
+        "parent_key": null
+    },
+    {
+        "key": "chance_speaking",
+        "label": "Speaking",
+        "sort_order": 180,
+        "parent_key": "chance_of"
+    },
+    {
+        "key": "chance_magic_use",
+        "label": "Magic Use",
+        "sort_order": 190,
+        "parent_key": "chance_of"
+    },
+    {
+        "key": "chance_sleeping",
+        "label": "Sleeping",
+        "sort_order": 200,
+        "parent_key": "chance_of"
+    }
+]

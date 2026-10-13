@@ -1,0 +1,68 @@
+[
+    {
+        "id": "dmg1",
+        "label": "Dungeon Master's Guide",
+        "pub_type": "book",
+        "parent_id": null,
+        "year": null,
+        "url": null,
+        "notes": null,
+        "created_by": null,
+        "created_at": "2026-03-17 15:17:18"
+    },
+    {
+        "id": "phb1",
+        "label": "Player's Handbook",
+        "pub_type": "book",
+        "parent_id": null,
+        "year": null,
+        "url": null,
+        "notes": null,
+        "created_by": null,
+        "created_at": "2026-03-17 15:17:17"
+    },
+    {
+        "id": "mm1",
+        "label": "Monster Manual I",
+        "pub_type": "book",
+        "parent_id": null,
+        "year": 1979,
+        "url": null,
+        "notes": null,
+        "created_by": null,
+        "created_at": "2026-03-17 15:17:17"
+    },
+    {
+        "id": "ff",
+        "label": "Fiend Folio",
+        "pub_type": "book",
+        "parent_id": null,
+        "year": 1981,
+        "url": null,
+        "notes": null,
+        "created_by": null,
+        "created_at": "2026-03-26 12:01:13"
+    },
+    {
+        "id": "mm2",
+        "label": "Monster Manual II",
+        "pub_type": "book",
+        "parent_id": null,
+        "year": 1983,
+        "url": null,
+        "notes": null,
+        "created_by": null,
+        "created_at": "2026-03-26 12:31:39"
+    },
+    {
+        "id": "ua",
+        "label": "Unearthed Arcana",
+        "pub_type": "book",
+        "parent_id": null,
+        "year": 1985,
+        "url": null,
+        "notes": null,
+        "created_by": null,
+        "created_at": "2026-03-26 15:59:27"
+    }
+]

@@ -1,0 +1,51 @@
+[
+    {
+        "id": "dmg1",
+        "label": "Dungeon Master's Guide",
+        "source_type": "import",
+        "priority": 0,
+        "enabled_by_default": 1
+    },
+    {
+        "id": "ff",
+        "label": "Fiend Folio",
+        "source_type": "import",
+        "priority": 0,
+        "enabled_by_default": 1
+    },
+    {
+        "id": "mm1",
+        "label": "Monster Manual I",
+        "source_type": "import",
+        "priority": 0,
+        "enabled_by_default": 1
+    },
+    {
+        "id": "mm2",
+        "label": "Monster Manual II",
+        "source_type": "import",
+        "priority": 0,
+        "enabled_by_default": 1
+    },
+    {
+        "id": "phb1",
+        "label": "Player's Handbook",
+        "source_type": "import",
+        "priority": 0,
+        "enabled_by_default": 1
+    },
+    {
+        "id": "ua_magic_items",
+        "label": "Unearthed Arcana Magic Items",
+        "source_type": "import",
+        "priority": 0,
+        "enabled_by_default": 1
+    },
+    {
+        "id": "ua_spells",
+        "label": "Unearthed Arcana Spells",
+        "source_type": "import",
+        "priority": 0,
+        "enabled_by_default": 1
+    }
+]

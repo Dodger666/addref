@@ -1,0 +1,32 @@
+[
+    {
+        "key": "category",
+        "label": "Category",
+        "sort_order": 0,
+        "parent_key": null
+    },
+    {
+        "key": "xp_value",
+        "label": "XP Value",
+        "sort_order": 0,
+        "parent_key": null
+    },
+    {
+        "key": "gp_value",
+        "label": "GP Value",
+        "sort_order": 10,
+        "parent_key": null
+    },
+    {
+        "key": "class_restrictions",
+        "label": "Class Restrictions",
+        "sort_order": 20,
+        "parent_key": null
+    },
+    {
+        "key": "dice_range",
+        "label": "Dice Range",
+        "sort_order": 30,
+        "parent_key": null
+    }
+]

@@ -1,0 +1,38 @@
+[
+    {
+        "id": "monster",
+        "label": "Monsters",
+        "entity_count": 766,
+        "label_singular": "Monster",
+        "layout_mode": "creature",
+        "has_groups": true,
+        "has_variants": true,
+        "has_images": true,
+        "title_transform": "uppercase",
+        "sort_order": 0
+    },
+    {
+        "id": "spell",
+        "label": "Spells",
+        "entity_count": 638,
+        "label_singular": "Spell",
+        "layout_mode": "spell",
+        "has_groups": false,
+        "has_variants": false,
+        "has_images": false,
+        "title_transform": "none",
+        "sort_order": 10
+    },
+    {
+        "id": "magic_item",
+        "label": "Magic Items",
+        "entity_count": 563,
+        "label_singular": "Magic Item",
+        "layout_mode": "catalog",
+        "has_groups": true,
+        "has_variants": false,
+        "has_images": false,
+        "title_transform": "none",
+        "sort_order": 20
+    }
+]

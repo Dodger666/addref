@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AD&amp;D Search</title>
+    <meta name="description" content="Offline-capable reference search for AD&D 1st edition spells, magic items, and monsters." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=Jost:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css?v=6" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#/">AD&amp;D Search</a>
+      <nav class="nav">
+        <a href="#/list/spell">Spells</a>
+        <a href="#/list/magic_item">Magic Items</a>
+        <a href="#/list/monster">Monsters</a>
+        <a href="#/filter">Filter</a>
+      </nav>
+    </header>
+
+    <main class="layout">
+      <section class="panel search-panel">
+        <div class="search-box">
+          <input
+            id="search"
+            type="search"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Search spells, items, monsters…"
+            aria-label="Search"
+          />
+          <kbd class="hint">↑↓ to navigate · ↵ to open · Esc to clear</kbd>
+        </div>
+        <ul id="results" class="results" role="listbox"></ul>
+      </section>
+
+      <section id="detail" class="panel detail" aria-live="polite">
+        <div class="empty">
+          <h1>AD&amp;D Search</h1>
+          <p>Type to search, or pick a category above to browse.</p>
+          <p class="muted" id="stats"></p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span id="footer-meta"></span>
+      <span class="muted">Static rebuild · client-side only</span>
+    </footer>
+
+    <script type="module" src="./app.js?v=6"></script>
+  </body>
+</html>

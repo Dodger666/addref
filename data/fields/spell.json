@@ -1,0 +1,74 @@
+[
+    {
+        "key": "spell_class",
+        "label": "Class",
+        "sort_order": 0,
+        "parent_key": null
+    },
+    {
+        "key": "level",
+        "label": "Level",
+        "sort_order": 10,
+        "parent_key": null
+    },
+    {
+        "key": "cantrip_category",
+        "label": "Cantrip Category",
+        "sort_order": 20,
+        "parent_key": null
+    },
+    {
+        "key": "school",
+        "label": "School",
+        "sort_order": 30,
+        "parent_key": null
+    },
+    {
+        "key": "reversible",
+        "label": "Reversible",
+        "sort_order": 40,
+        "parent_key": null
+    },
+    {
+        "key": "components",
+        "label": "Components",
+        "sort_order": 50,
+        "parent_key": null
+    },
+    {
+        "key": "range",
+        "label": "Range",
+        "sort_order": 60,
+        "parent_key": null
+    },
+    {
+        "key": "casting_time",
+        "label": "Casting Time",
+        "sort_order": 70,
+        "parent_key": null
+    },
+    {
+        "key": "duration",
+        "label": "Duration",
+        "sort_order": 80,
+        "parent_key": null
+    },
+    {
+        "key": "saving_throw",
+        "label": "Saving Throw",
+        "sort_order": 90,
+        "parent_key": null
+    },
+    {
+        "key": "area_of_effect",
+        "label": "Area of Effect",
+        "sort_order": 100,
+        "parent_key": null
+    },
+    {
+        "key": "material_components",
+        "label": "Material Components",
+        "sort_order": 110,
+        "parent_key": null
+    }
+]
